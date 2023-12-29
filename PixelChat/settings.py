@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     #! External
     "drf_spectacular",
+    "rest_framework",
     #? Internal
     "account",
     "server"
@@ -134,5 +135,5 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'PixelChat-Api',
     'DESCRIPTION': 'PixelChat APIs',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': True,
+    'SERVE_INCLUDE_SCHEMA': False,
 }
