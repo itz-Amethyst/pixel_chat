@@ -1,13 +1,45 @@
+import os
+import shutil
+
 from django.db import models
 from django.conf import settings
+from django.dispatch import receiver
+from rest_framework.generics import get_object_or_404
+
+
+def category_icon_upload_path(instance, filename):
+    # return f"category/{instance.id}/category_icons/{filename}"
+
+    return f"category/category_icons/{instance.id} - {instance.name}/{filename}"
 
 class Category(models.Model):
     name = models.CharField(max_length = 100)
     description = models.TextField(blank = True, null = True)
+    icon = models.FileField(upload_to = category_icon_upload_path, null = True, blank = True)
+    # ImageField does not support svg
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *arg, **kwargs):
         self.name = self.name.lower()
-        super(Category, self).save()
+        if self.id:
+            existing = get_object_or_404(Category, id = self.id)
+            if existing.icon != self.icon:
+                existing.icon.delete(save = False)
+        super(Category, self).save(*arg, **kwargs)
+
+    @receiver(models.signals.pre_delete, sender="server.Category")
+    def category_delete_files(sender, instance, **kwargs):
+        icon_field = instance._meta.get_field("icon")
+
+        if isinstance(icon_field, (models.ImageField, models.FileField)):
+            file = getattr(instance, "icon", None)
+            if file and file.storage.exists(file.name):
+                #! Remove just file
+                # file.storage.delete(file.name)
+
+                #? Remove entire files inc folder
+                folder_path = os.path.join(settings.MEDIA_ROOT, os.path.dirname(file.name))
+                shutil.rmtree(folder_path, ignore_errors=True)
+
 
     def __str__(self):
         return self.name
