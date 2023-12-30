@@ -25,13 +25,13 @@ class ServerListViewSet(viewsets.ViewSet):
             user_id = request.user.id
             self.queryset = self.queryset.filter(member = user_id)
 
-        if server_id and not self.queryset.filter(id = server_id).exists():
-            raise ValidationError(detail = f"Server with id {server_id} does not exists.")
-        else:
+        if server_id:
+            if not self.queryset.filter(id = server_id).exists():
+                raise ValidationError(detail=f"Server with id {server_id} does not exists.")
             self.queryset = self.queryset.filter(id = server_id)
 
         if count:
-            self.queryset = self.queryset.filter[:int(count)]
+            self.queryset = self.queryset[:int(count)]
 
         serializer = ServerSerializer(self.queryset, many = True)
         return Response(serializer.data, status = status.HTTP_200_OK)
