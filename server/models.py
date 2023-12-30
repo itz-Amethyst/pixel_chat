@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.dispatch import receiver
 from rest_framework.generics import get_object_or_404
-
+from .validators import validate_icon_image_size, validate_image_file_extension
 
 #Todo: Refactor this
 def server_icon_upload_path(instance, filename):
@@ -23,7 +23,7 @@ def category_icon_upload_path(instance, filename):
 class Category(models.Model):
     name = models.CharField(max_length = 100)
     description = models.TextField(blank = True, null = True)
-    icon = models.FileField(upload_to = category_icon_upload_path, null = True, blank = True)
+    icon = models.FileField(upload_to = category_icon_upload_path, null = True, blank = True,validators = [validate_icon_image_size, validate_image_file_extension])
     # ImageField does not support svg
 
     def save(self, *arg, **kwargs):
@@ -73,8 +73,8 @@ class Channel(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'channel_owner')
     topic = models.CharField(max_length = 100)
     server = models.ForeignKey(Server, on_delete = models.CASCADE, related_name = 'channel_server')
-    banner = models.ImageField(upload_to = server_banner_upload_path, null = False, blank = False)
-    icon = models.ImageField(upload_to = server_icon_upload_path, null = False, blank = False)
+    banner = models.ImageField(upload_to = server_banner_upload_path, null = True, blank = False, validators = [validate_image_file_extension])
+    icon = models.ImageField(upload_to = server_icon_upload_path, null = True, blank = False, validators = [validate_icon_image_size, validate_image_file_extension])
 
     def save(self, *arg, **kwargs):
         self.name = self.name.lower()
