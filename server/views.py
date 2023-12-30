@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.shortcuts import render
 from rest_framework.exceptions import ValidationError , AuthenticationFailed
 from rest_framework.response import Response
@@ -14,9 +15,13 @@ class ServerListViewSet(viewsets.ViewSet):
         only_logged_user = request.query_params.get("current_user") == "true"
         count = request.query_params.get("take")
         server_id = request.query_params.get("server_id")
+        members_count = request.query_params.get("members_count") == "true"
 
         if only_logged_user and not request.user.is_authenticated:
             raise AuthenticationFailed()
+
+        if members_count:
+            self.queryset = self.queryset.annotate(users_count = Count("member"))
 
         if category:
             self.queryset = self.queryset.filter(category__name = category)
