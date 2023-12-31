@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     #! External
     "drf_spectacular",
     "rest_framework",
+    "corsheaders"
     #? Internal
     "account",
     "server"
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -138,4 +140,10 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'PixelChat APIs',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+}
+
+CORS_ALLOWED_ORIGINS = {
+    "http://localhost:8000",
+    "http://localhost:8080",
+    "http://127.0.0.1:8000"
 }
