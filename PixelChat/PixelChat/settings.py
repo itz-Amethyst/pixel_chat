@@ -32,10 +32,11 @@ INSTALLED_APPS = [
     #! External
     "drf_spectacular",
     "rest_framework",
-    "corsheaders"
+    "corsheaders",
     #? Internal
     "account",
-    "server"
+    "server",
+    "webchat"
 ]
 
 MIDDLEWARE = [
@@ -132,9 +133,9 @@ AUTH_USER_MODEL = "account.Account"
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
         # "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "account.authenticate.JWTCookieAuthentication",
+        # "account.authenticate.JWTCookieAuthentication",
     ]
 }
 

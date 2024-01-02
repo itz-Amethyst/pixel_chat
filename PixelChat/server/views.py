@@ -1,12 +1,23 @@
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from .serializer import ServerSerializer , CategorySerializer
 from .schema import server_list_docs
 
 from .models import Server, Category
+
+# class ServerMembershipViewSet(viewsets.ViewSet):
+#     permission_classes = [IsAuthenticated]
+#
+#     def create(self, request, server_id):
+#         pass
+#
+#     def destroy(self, request, server_id):
+#         pass
+
 
 class CategoryListViewSet(viewsets.ViewSet):
     queryset = Category.objects.all()
