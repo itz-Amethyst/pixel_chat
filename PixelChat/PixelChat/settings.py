@@ -17,6 +17,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
+# JWT decode Algorithm
+JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM")
+
 ALLOWED_HOSTS = []
 
 
