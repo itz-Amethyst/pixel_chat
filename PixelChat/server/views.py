@@ -44,6 +44,17 @@ class ServerMembershipViewSet(viewsets.ViewSet):
 
         return Response({"message": "User removed from server..."}, status=status.HTTP_200_OK)
 
+    @action(detail = False, methods = ["GET"])
+    def is_member( self, request, server_id = None ):
+        server = get_object_or_404(Server, id = server_id)
+
+        user = request.user
+
+        is_member = server.member.filter(id = user.id).exists()
+
+        return Response({"is_member": is_member})
+
+
 
 class CategoryListViewSet(viewsets.ViewSet):
     queryset = Category.objects.all()
