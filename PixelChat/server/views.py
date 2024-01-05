@@ -1,6 +1,8 @@
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets, status
@@ -9,14 +11,38 @@ from .schema import server_list_docs
 
 from .models import Server, Category
 
-# class ServerMembershipViewSet(viewsets.ViewSet):
-#     permission_classes = [IsAuthenticated]
-#
-#     def create(self, request, server_id):
-#         pass
-#
-#     def destroy(self, request, server_id):
-#         pass
+class ServerMembershipViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    @staticmethod
+    def create(self, request, server_id):
+        server = get_object_or_404(Server, id = server_id)
+
+        user = request.user
+
+        if server.member.filter(id = user.id).exists():
+            return Response({"error": f"User {user.username} is already a member"}, status=status.HTTP_409_CONFLICT)
+
+        server.member.add(user)
+
+        return Response({"message": f"User {user.username} joined server successfully"}, status=status.HTTP_200_OK)
+
+
+    @action(detail = False, methods = ["DELETE"])
+    def remove_member(self, request, server_id):
+        server = get_object_or_404(Server, id=server_id)
+
+        user = request.user
+
+        if not server.member.filter(id=user.id).exists():
+            return Response({"error": f"User {user.username} is not a member"}, status=status.HTTP_404_NOT_FOUND)
+
+        if server.owner == user:
+            return Response({"error": "Owners cannot be removed as a member"}, status=status.HTTP_409_CONFLICT)
+
+        server.member.remove(user)
+
+        return Response({"message": "User removed from server..."}, status=status.HTTP_200_OK)
 
 
 class CategoryListViewSet(viewsets.ViewSet):
