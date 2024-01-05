@@ -11,6 +11,21 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+# Custom
+from channels.routing import ProtocolTypeRouter, URLRouter
+from . import urls
+from webchat.middleware import JWTAuthMiddleWare
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PixelChat.settings')
 
-application = get_asgi_application()
+django_application = get_asgi_application()
+
+
+application = ProtocolTypeRouter(
+    {
+        # Todo: check get_asgi_application
+        "http": django_application,
+        "websocket": JWTAuthMiddleWare(URLRouter(urls.websocket_urlpatterns))
+
+    }
+)
