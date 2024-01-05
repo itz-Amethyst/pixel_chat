@@ -7,6 +7,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView , TokenRefreshVie
 
 import account.urls
 import server.urls
+import webchat.urls
+from webchat.consumer import WebChatConsumer
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -22,9 +24,12 @@ urlpatterns = [
 
     #? Account
     path('api/account/', include(account.urls.router.urls)),
+
+    #* Message
+    path('api/message/', include(webchat.urls.router.urls)),
 ]
 
-websocket_urlpatterns = [path("<str:serverId>")]
+websocket_urlpatterns = [path("<str:serverId>/<str:channelId>", WebChatConsumer.as_asgi())]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
