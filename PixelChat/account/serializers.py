@@ -37,26 +37,32 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
-    # Todo
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['example'] = "example"
-
-        return token
+    #! If you want to access to the token and do some operations to it
+    # def get_token(cls, user):
+    #     token = super().get_token(user)
+    #     token_data = {
+    #         'access_token': str(token.access_token),
+    #         'refresh_token': str(token),
+    #     }
+    #
+    #     return token_data
 
     def validate(self, attrs):
         data = super().validate(attrs)
+        # Add user_id and user_name to the response data
         data["user_id"] = self.user.id
+        data["user_name"] = self.user.username
 
         return data
 
 
 class JWTCookieTokenRefreshSerializer(TokenRefreshSerializer):
-    refresh = None
+    # refresh = None
 
     def validate(self, attrs):
-        attrs["refresh"] = self.context["request"].COOKIES.get(settings.SIMPLE_JWT["REFRESH_TOKEN_NAME"])
-
+        # Another way receiving from cookie
+        # attrs["refresh"] = self.context["request"].COOKIES.get(settings.SIMPLE_JWT["REFRESH_TOKEN_NAME"])
+        # It will generate new access and give
         if attrs["refresh"]:
             return super().validate(attrs)
         else:
