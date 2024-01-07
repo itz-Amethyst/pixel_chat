@@ -14,11 +14,13 @@ from .models import Server, Category
 class ServerMembershipViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
-    @staticmethod
     def create(self, request, server_id):
         server = get_object_or_404(Server, id = server_id)
 
         user = request.user
+
+        if server.owner.id == user.id:
+            return Response({"error": f"User {user.username} is owner you cannot add owner."}, status=status.HTTP_409_CONFLICT)
 
         if server.member.filter(id = user.id).exists():
             return Response({"error": f"User {user.username} is already a member"}, status=status.HTTP_409_CONFLICT)
@@ -52,7 +54,7 @@ class ServerMembershipViewSet(viewsets.ViewSet):
 
         is_member = server.member.filter(id = user.id).exists()
 
-        return Response({"is_member": is_member})
+        return Response({"is_member of server": is_member})
 
 
 
@@ -62,7 +64,7 @@ class CategoryListViewSet(viewsets.ViewSet):
     @extend_schema(responses = CategorySerializer)
     def list( self, request ):
         serializer = CategorySerializer(self.queryset, many = True)
-        return serializer.data
+        return Response(serializer.data, status = status.HTTP_200_OK)
 
 
 

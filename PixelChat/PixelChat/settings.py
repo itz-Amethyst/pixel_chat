@@ -149,18 +149,18 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-CORS_ALLOWED_ORIGINS = {
+CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://localhost:8080",
     "http://127.0.0.1:8000"
-}
+]
 
 CHANNEL_LAYERS = {
     "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds = 5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes = 2),
     "REFRESH_TOKEN_LIFETIME": timedelta(days = 30),
     # JWTCookie
     "ACCESS_TOKEN_NAME": "access_token",
