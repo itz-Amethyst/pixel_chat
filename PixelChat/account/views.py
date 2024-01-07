@@ -1,7 +1,9 @@
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets , status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView , TokenRefreshView
 
@@ -11,7 +13,7 @@ from .serializers import AccountSerializer , RegisterSerializer , JWTCookieToken
     CustomTokenObtainPairSerializer
 
 
-class RegisterUserView(APIView):
+class RegisterUserView(viewsets.ViewSet):
     def post( self, request ):
         serializer = RegisterSerializer(data = request.data)
         if serializer.is_valid():
@@ -33,9 +35,8 @@ class RegisterUserView(APIView):
 
 
 
-class LogOutApiView(APIView):
+class LogOutApiView(viewsets.ViewSet):
 
-    @staticmethod
     def post( self, request ):
         # Todo get use name from request , print in response
         response = Response("Logged Out Successfully!")
@@ -52,7 +53,7 @@ class AccountViewSet(viewsets.ViewSet):
     @user_list_docs
     def list( self, request ):
         user_id = request.query_params.get("user_id")
-        queryset = Account.objects.get(id = user_id)
+        queryset = get_object_or_404(Account, id = user_id)
         serializer = AccountSerializer(queryset)
         return Response(serializer.data)
 
@@ -76,7 +77,7 @@ class JWTSetCookieMixIn:
                 samesite = settings.SIMPLE_JWT["JWT_COOKIE_SAMESITE"]
             )
 
-            del response.data["access"]
+            # del response.data["access"]
 
         return super().finalize_response(request, response, *args, **kwargs)
 
